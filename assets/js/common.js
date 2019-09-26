@@ -11,6 +11,7 @@ layui.config({
     citypicker: 'city-picker/city-picker',
     tableSelect: 'tableSelect/tableSelect',
     CKEDITOR: 'ckeditor/ckeditor',
+    cascader: 'cascader/cascader'
 }).use(['layer', 'admin'], function () {
     var $ = layui.jquery;
     var layer = layui.layer;
