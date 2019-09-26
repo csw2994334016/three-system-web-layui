@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>组织机构管理</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=311"/>
+    <link rel="stylesheet" href="../../assets/libs/zTree/css/zTreeStyle/zTreeStyle.css"/>
+</head>
+<body>
+
+<!-- 页面加载loading -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label w-auto">搜索：</label>
+                        <div class="layui-input-inline mr0">
+                            <input id="edtSearch" class="layui-input" type="text" placeholder="输入组织机构名称"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+                        <button id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                        <button id="btnDel" class="layui-btn icon-btn layui-btn-danger"><i
+                                class="layui-icon">&#xe640;</i>删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="organizationTable" lay-filter="organizationTable"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="lookUser">查看用户</a>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="organizationModel">
+    <form id="organizationModelForm" lay-filter="organizationModelForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>组织机构名称</label>
+            <div class="layui-input-block">
+                <input name="orgName" placeholder="请输入组织机构名称" type="text" class="layui-input" maxlength="100"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>组织机构编码</label>
+            <div class="layui-input-block">
+                <input name="orgCode" placeholder="请输入组织机构编码" type="text" class="layui-input" maxlength="100"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>父级机构名称</label>
+            <div class="layui-input-block">
+                <select id="authSelect" name="pId" lay-verify="required">
+                    <option value="-1">一级公司</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>排序号</label>
+            <div class="layui-input-block">
+                <input name="sort" placeholder="请输入排序号" type="number" class="layui-input" min="0" max="1000"
+                       lay-verType="tips" lay-verify="required|number" required value="1"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="remark" placeholder="请输入内容" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closePageDialog">取消</button>
+            <button class="layui-btn" lay-filter="organizationModelSubmit" lay-submit>保存</button>
+        </div>
+    </form>
+</script>
+
+
+<!--角色下的用户表格-->
+<script type="text/html" id="role-user-model-table">
+    <div class="layui-card" style="width: 100%">
+        <div class="layui-card-body">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <label class="layui-form-label w-auto">搜索：</label>
+                    <div class="layui-inline">
+                        <select id="role-user-search-key">
+                            <option value="">请选择搜索条件</option>
+                            <option value="username">账号</option>
+                            <option value="fullName">姓名</option>
+                            <option value="phone">手机号</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <input id="role-user-search-value" class="layui-input" type="text" placeholder="输入关键字"/>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="role-user-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button id="role-user-btn-delete" class="layui-btn icon-btn layui-btn-danger"><i
+                                class="layui-icon">&#xe640;</i>删除
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <table class="layui-table" id="role-user-table" lay-filter="user-table"></table>
+        </div>
+    </div>
+</script>
+<!-- 表格状态列 -->
+<script type="text/html" id="role-user-tpl-state">
+    <input type="checkbox" lay-filter="ckState" value="{{d.id}}" lay-skin="switch" lay-text="正常|锁定"
+           {{d.status==1?'checked':''}}/>
+</script>
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../assets/libs/zTree/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=311"></script>
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'config', 'notice', 'treetable'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var config = layui.config;
+        var notice = layui.notice;
+        var treetable = layui.treetable;
+
+        // 渲染表格
+        function renderTable() {
+            treetable.render({
+                treeColIndex: 1,
+                treeSpid: -1,
+                treeIdName: 'id',
+                treePidName: 'pId',
+                treeDefaultClose: false,
+                elem: '#organizationTable',
+                url: config.three_user_server + '/sys/organizations',
+                method: 'get',
+                where: {
+                    access_token: config.getToken().access_token
+                },
+                cellMinWidth: 100,
+                cols: [[
+                    {type: 'numbers'},
+                    {field: 'orgName', title: '机构名称', minWidth: 200, sort: true},
+                    {field: 'orgCode', title: '机构编码', minWidth: 200, sort: true},
+                    {field: 'pName', title: '父级机构名称', minWidth: 200},
+                    {field: 'sort', title: '排序号'},
+                    {field: 'attnList', title: '初审人'},
+                    {field: 'auditList', title: '终审人'},
+                    {field: 'remark', title: '备注'},
+                    {
+                        templet: function (d) {
+                            return util.toDateString(d.createDate);
+                        }, title: '创建时间', width: 160
+                    },
+                    {templet: '#tableBar', title: '操作', align: 'center', minWidth: 200, fixed: "right"}
+                ]]
+            });
+        }
+
+        renderTable();
+
+        // 添加
+        $('#btnAdd').click(function () {
+            showEditModel();
+        });
+
+        // 删除
+        $('#btnDel').click(function () {
+            doDel(getSelectIds());
+        });
+
+        function getSelectIds() {
+            var ids = [];
+            var checkStatus = table.checkStatus('organizationTable');
+            var selectData = checkStatus.data;
+            // console.log(selectData);
+            for (var j = 0; j < selectData.length; j++) {
+                ids.push(selectData[j].id);
+            }
+            return ids;
+        }
+
+        // 搜索按钮点击事件
+        $('#btnSearch').click(function () {
+            $('#edtSearch').removeClass('layui-form-danger');
+            var keyword = $('#edtSearch').val();
+            var $tds = $('#organizationTable').next('.treeTable').find('.layui-table-body tbody tr td');
+            $tds.css('background-color', 'transparent');
+            if (!keyword) {
+                layer.msg("请输入关键字", {icon: 5, anim: 6});
+                $('#edtSearch').addClass('layui-form-danger');
+                $('#edtSearch').focus();
+                return;
+            }
+            var searchCount = 0;
+            $tds.each(function () {
+                if ($(this).text().indexOf(keyword) >= 0) {
+                    $(this).css('background-color', '#FAE6A0');
+                    if (searchCount === 0) {
+                        $('body,html').stop(true);
+                        $('body,html').animate({scrollTop: $(this).offset().top - 150}, 500);
+                    }
+                    searchCount++;
+                }
+            });
+            if (searchCount === 0) {
+                layer.msg("没有匹配结果", {icon: 5, anim: 6});
+            } else {
+                treetable.expandAll('#organizationTable');
+            }
+        });
+
+        // 工具条点击事件
+        table.on('tool(organizationTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            } else if (layEvent === 'del') {  // 权限管理
+                var ids = [];
+                ids.push(data.id);
+                doDel(ids, data.orgName);
+            } else if (layEvent === 'lookUser') { // 查看用户
+                lookRoleUserTable(data);
+            }
+        });
+
+        // 删除
+        function doDel(ids, orgName) {
+            if (ids.length === 0) {
+                layer.msg("请先选择一条记录！", {icon: 2});
+            } else {
+                top.layer.confirm('确定要删除“' + orgName + '”吗？', {
+                    skin: 'layui-layer-admin'
+                }, function (i) {
+                    top.layer.close(i);
+                    layer.load(2);
+                    admin.req(config.three_user_server + '/sys/organizations?' + 'ids=' + ids, {}, function (res) {
+                        layer.closeAll('loading');
+                        if (res.code === 200) {
+                            layer.msg(res.msg, {icon: 1});
+                            renderTable()
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    }, 'DELETE');
+                });
+            }
+        }
+
+        // 显示编辑弹窗
+        function showEditModel(modelData) {
+            admin.open({
+                type: 1,
+                title: (modelData ? '修改' : '添加') + '组织机构',
+                area: ['600px'],
+                content: $('#organizationModel').html(),
+                success: function (layero, dIndex) {
+                    var method = modelData ? 'PUT' : 'POST';
+                    // 获取所有组织机构
+                    layer.load(2);
+                    admin.req(config.three_user_server + '/sys/organizations', null, function (data) {
+                        layer.closeAll('loading');
+                        if (0 === data.code) {
+                            // console.log(data.data);
+                            for (var i = 0; i < data.data.length; i++) {
+                                $("#authSelect").append("<option value=" + data.data[i].id + ">" + data.data[i].orgName + "</option>");
+                            }
+                            // 回显数据
+                            form.val('organizationModelForm', modelData);  // 回显数据
+                            form.render('select');
+                        } else {
+                            notice.error({message: data.msg});
+                        }
+                    }, 'GET');
+                    // form.val('organizationModelForm', modelData);  // 回显数据
+                    // 表单提交事件
+                    form.on('submit(organizationModelSubmit)', function (data) {
+                        layer.load(2);
+                        admin.req(config.three_user_server + '/sys/organizations', data.field, function (res) {
+                            layer.closeAll('loading');
+                            if (res.code === 200) {
+                                layer.close(dIndex);
+                                notice.success({message: res.msg});
+                                renderTable();
+                            } else {
+                                notice.error({message: res.msg});
+                            }
+                        }, method);
+                        return false;
+                    });
+                }
+            });
+        }
+
+        // 查看角色用户
+        var lookRoleUserTable = function (data) {
+            layer.load(2);
+            layer.open({
+                type: 1,
+                title: data.roleName + '-用户列表',
+                content: $('#role-user-model-table').html(),
+                area: ['800px', '400px'],
+                skin: 'layui-layer-admin',
+                success: function () {
+                    form.render('select'); //刷新select选择框渲染
+                    // 渲染表格
+                    table.render({
+                        elem: '#role-user-table',
+                        url: config.three_user_server + '/sys/users/findByRole?roleId=' + data.id,
+                        method: 'POST',
+                        where: {
+                            access_token: config.getToken().access_token
+                        },
+                        page: true,
+                        cellMinWidth: 100,
+                        cols: [[
+                            {type: 'checkbox'},
+                            {field: 'username', sort: true, title: '账号'},
+                            {field: 'fullName', sort: true, title: '姓名'},
+                            {field: 'phone', sort: true, title: '手机号'},
+                            {field: 'remark', title: '备注'},
+                            {
+                                sort: true, templet: function (d) {
+                                    return util.toDateString(d.createDate);
+                                }, title: '创建时间'
+                            },
+                            {field: 'state', sort: true, templet: '#role-user-tpl-state', title: '状态'}
+                        ]]
+                    });
+
+                    layer.closeAll('loading');
+
+                    // 删除按钮点击事件
+                    $('#role-user-btn-delete').click(function () {
+                        var checkStatus = table.checkStatus('role-user-table'); //user-table 即为基础参数 id 对应的值
+                        var selectData = checkStatus.data;
+                        // console.log(selectData);
+                        if (selectData.length === 0) {
+                            layer.msg("请先选择一条记录！", {icon: 2});
+                        } else {
+                            var userIds = [];
+                            for (var j = 0; j < selectData.length; j++) {
+                                userIds.push(selectData[j].id);
+                            }
+                            layer.confirm('确定删除选中的记录吗？', function (i) {
+                                layer.close(i);
+                                layer.load(2);
+                                admin.req(config.three_user_server + '/sys/roles/assignRoleUser?roleId=' + data.id + '&userIds=' + userIds, {}, function (data) {
+                                    layer.closeAll('loading');
+                                    if (data.code === 200) {
+                                        table.reload('role-user-table');
+                                        layer.msg(data.msg, {icon: 1});
+                                    } else {
+                                        layer.msg(data.msg, {icon: 2});
+                                    }
+                                }, 'PUT');
+                            });
+                        }
+
+                    });
+
+                    // 搜索按钮点击事件
+                    $('#role-user-btn-search').click(function () {
+                        var key = $('#role-user-search-key').val();
+                        var value = $('#role-user-search-value').val();
+                        table.reload('role-user-table', {where: {searchKey: key, searchValue: value}});
+                    });
+                }
+            });
+        };
+
+    });
+</script>
+
+</body>
+</html>

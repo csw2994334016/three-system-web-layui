@@ -1,0 +1,354 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>代码生成</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=311"/>
+    <link rel="stylesheet" href="../../assets/module/formSelects/formSelects-v4.css"/>
+</head>
+<body class="timo-layout-page">
+
+<!-- 页面加载loading -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form id="generateCodeForm" lay-filter="generateCodeForm" class="layui-form">
+            <fieldset id="basic" class="layui-elem-field">
+                <legend class="code-legend">配置信息</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">保存地址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" placeholder="默认地址为模块名称" name="adminPath" class="layui-input"/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">作者名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="author" class="layui-input"/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">* </span>包路径</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="packPath" class="layui-input" lay-verType="tips"
+                                       lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">* </span>模块名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="moduleName" class="layui-input" lay-verType="tips"
+                                       lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">* </span>菜单名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="menuName" class="layui-input" lay-verType="tips"
+                                       lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">* </span>接口路径</label>
+                            <div class="layui-input-inline">
+                                <input type="text" placeholder="注意接口路径唯一性" name="controllerUrl" class="layui-input"
+                                       lay-verType="tips"
+                                       lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">* </span>实体类</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="className" class="layui-input" lay-verType="tips"
+                                       lay-verify="required" required/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label"><span style="color: red;">* </span>表名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="tableName" class="layui-input" lay-verType="tips"
+                                       lay-verify="required" required/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="title">实体类</div>
+                    <div class="control">
+                        <a id="field-add" class="layui-btn layui-btn layui-btn-xs"><i class="layui-icon">&#xe654;</i>添加</a>
+                        <a id="field-del" class="layui-btn layui-btn-danger layui-btn-xs"><i
+                                class="layui-icon">&#xe640;</i>删除</a>
+                        <a id="field-up" class="layui-btn layui-btn layui-btn-xs"><i
+                                class="layui-icon">&#xe619;</i>向上</a>
+                        <a id="field-down" class="layui-btn layui-btn layui-btn-xs"><i class="layui-icon">&#xe61a;</i>向下</a>
+                    </div>
+                    <span class="layui-badge" style="margin-left: 10px">后台默认生成字段：id(主键), remark(备注), status(状态), createDate(创建时间), updateDate(修改时间)，注意命名冲突！</span>
+                </div>
+                <div class="panel-body panel-body-entity">
+                    <table class="layui-table">
+                        <thead>
+                        <tr>
+                            <th width="20">#</th>
+                            <th width="140">字段名称</th>
+                            <th width="220">字段标题</th>
+                            <th width="90">数据类型</th>
+                            <th width="50">最大长度</th>
+                            <th width="60">是否空值</th>
+                            <th width="100">关键值</th>
+                            <th width="100">查询（可选）</th>
+                            <th>字段验证（可选）</th>
+                        </tr>
+                        </thead>
+                        <tbody id="entity">
+                        <tr>
+                            <td class="entity-number">1</td>
+                            <td class="entity-name"><input type="text" name="columnName" value="id" lay-verType="tips"
+                                                           lay-verify="required" required/></td>
+                            <td class="entity-title"><input type="text" name="columnComment" value="主键ID"
+                                                            lay-verType="tips" lay-verify="required" required/></td>
+                            <td class="layui-form entity-type">
+                                <select name="columnType" lay-verType="tips" lay-verify="required" required>
+                                    <option value="String" selected>String</option>
+                                    <option value="Integer">Integer</option>
+                                    <option value="Long">Long</option>
+                                    <option value="Double">Double</option>
+                                    <option value="BigDecimal">BigDecimal</option>
+                                    <option value="Date">Date</option>
+                                </select>
+                            </td>
+                            <td class="entity-title"><input type="text" name="columnLength" value="36"/></td>
+                            <td class="layui-form entity-show">
+                                <input name="isNullable" type="checkbox" lay-text="是|否" lay-skin="switch">
+                            </td>
+                            <td class="layui-form entity-query">
+                                <select name="columnKey" lay-verify="entity-type">
+                                    <option value=""></option>
+                                    <option value="PRI" selected>主键</option>
+                                    <option value="UNI">唯一</option>
+                                    <option value="text">超大文本</option>
+                                </select>
+                            </td>
+                            <td class="layui-form entity-query">
+                                <select name="columnQuery" lay-verify="entity-type">
+                                    <option value=""></option>
+                                    <option value="String">精准查询</option>
+                                    <option value="Integer">模糊查询</option>
+                                </select>
+                            </td>
+                            <td class="entity-verify">
+                                <select name="columnVerify" xm-select="columnVerify">
+                                    <option value="String">必填</option>
+                                    <option value="Integer">数字</option>
+                                    <option value="email">邮箱</option>
+                                    <option value="phone">手机号</option>
+                                </select>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="title">模板信息</div>
+                    <div class="info"><i></i>创建<i class="lose"></i>忽略</div>
+                </div>
+                <div id="float" class="panel-body panel-body-float">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block" id="templateCheckbox">
+                            <input type="checkbox" name="templateName" value="Entity" title="实体类：Entity"/>
+                            <input type="checkbox" name="templateName" value="Controller" title="控制器：Controller"/>
+                            <input type="checkbox" name="templateName" value="Service" title="服务层：Service"/>
+                            <input type="checkbox" name="templateName" value="Repository" title="dao层：Repository"/>
+                            <input type="checkbox" name="templateName" value="Param" title="参数类：Param"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item text-center">
+                <a id="reset" class="layui-btn layui-btn-primary">重置</a>
+                <button class="layui-btn" lay-filter="generateCodeFormSubmit" lay-submit>保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=311"></script>
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'formSelects', 'config', 'notice'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var formSelects = layui.formSelects;
+        var config = layui.config;
+        var notice = layui.notice;
+
+        form.render();
+
+        /* 实体模型操作 */
+        var entity = $("#entity");
+        var field = null;
+        // 选中字段
+        entity.on("click", ".entity-number", function () {
+            if (field !== null) {
+                $(field).css("background-color", "#FFFFFF");
+                $(field).css("color", "#666666");
+            }
+            if (field !== this) {
+                $(this).css("background-color", "#5FB878");
+                $(this).css("color", "#FFFFFF");
+                field = this;
+            } else {
+                field = null;
+            }
+        });
+        // 添加字段
+        $("#field-add").on("click", function () {
+            var element = entity.children("tr:last-child").clone();
+            element.find("input, select").val("");
+            element.find("[name='type']").val("1");
+            var random = Math.random() * 10000;
+            element.find("[xm-select]").attr("xm-select", random);
+            if (field == null) {
+                entity.append(element);
+            } else {
+                $(field).parent().after(element);
+            }
+            element.children(".entity-number").click();
+            form.render();
+            formSelects.render(random);
+            resetNumber();
+        });
+        // 删除字段
+        $("#field-del").on("click", function () {
+            if (field != null) {
+                $(field).parent().remove();
+                resetNumber();
+            }
+        });
+        // 上移字段
+        $("#field-up").on("click", function () {
+            if (field != null) {
+                var parent = $(field).parent();
+                if (parent.prev().length === 1) {
+                    parent.insertBefore(parent.prev());
+                    resetNumber();
+                }
+            }
+        });
+        // 下移字段
+        $("#field-down").on("click", function () {
+            if (field != null) {
+                var parent = $(field).parent();
+                if (parent.next().length === 1) {
+                    parent.insertAfter(parent.next());
+                    resetNumber();
+                }
+            }
+        });
+
+        // 重置字段编号
+        var resetNumber = function () {
+            entity.children().each(function (key, val) {
+                $(val).children(".entity-number").text(key + 1);
+            });
+        };
+
+        // 数据类型下拉选择触发事件
+        // form.on('select(columnType)', function(data){
+        //     console.log(data.value); //得到被选中的值
+        //     if (data.value === 'Integer') {
+        //         $('#columnLength').val(11);
+        //     } else if (data.value === 'String') {
+        //         $('#columnLength').val(255);
+        //     } else {
+        //         $('#columnLength').val('');
+        //     }
+        // });
+
+        // 保存按钮事件
+        form.on('submit(generateCodeFormSubmit)', function (data) {
+            var columnList = getEntity();
+            var templateList = getTemplate();
+            if (columnList.length === 0) {
+                notice.error({message: '请填写实体类信息'});
+            } else if (templateList.length === 0) {
+                notice.error({message: '请选择模板信息'});
+            } else {
+                // 封装数据
+                var generatorParam = {
+                    genConfig: data.field,
+                    columnInfoList: columnList,
+                    templateList: templateList
+                };
+                layer.load(2);
+                admin.req(config.three_develop_server + '/develop/generators/generate', generatorParam, function (res) {
+                    layer.closeAll('loading');
+                    if (res.code === 200) {
+                        // layer.msg(res.msg, {icon: 1});
+                        notice.success({message: res.msg})
+                    } else {
+                        // layer.alert(res.msg, {icon: 2});
+                        notice.error({message: res.msg});
+                    }
+                }, 'POST');
+            }
+            return false;
+        });
+
+        // 提取实体类数据
+        var getEntity = function () {
+            var fieldList = [];
+            entity.children().each(function (key, trNode) {
+                var field = {};
+                field.columnName = $(trNode).find("[name='columnName']").val();
+                field.columnComment = $(trNode).find("[name='columnComment']").val();
+                field.columnType = $(trNode).find("[name='columnType']").val();
+                field.columnLength = $(trNode).find("[name='columnLength']").val();
+                field.isNullable = $(trNode).find("[name='isNullable']").is(':checked');
+                field.columnKey = $(trNode).find("[name='columnKey']").val();
+                field.columnQuery = $(trNode).find("[name='columnQuery']").val();
+                field.columnVerify = formSelects.value('columnVerify', 'valStr');
+                fieldList[key] = field;
+            });
+            return fieldList;
+        };
+
+        // 提取模板数据
+        var getTemplate = function () {
+            var template = [];
+            $("input:checkbox[name='templateName']:checked").each(function (i) {
+                template[i] = $(this).val();
+            });
+            return template;
+        };
+
+        // 下移字段
+        $("#reset").on("click", function () {
+            window.location.reload();
+        });
+
+    });
+</script>
+
+</body>
+</html>

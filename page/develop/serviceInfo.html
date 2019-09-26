@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>服务管理</title>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=311"/>
+    <link rel="stylesheet" href="../../assets/module/formSelects/formSelects-v4.css"/>
+</head>
+<body>
+
+<!-- 页面加载loading -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <label class="layui-form-label w-auto">搜索：</label>
+                    <div class="layui-inline">
+                        <select id="sltKey">
+                            <option value="">请选择搜索条件</option>
+                            <option value="name">服务名称</option>
+                        </select>
+                    </div>
+                    <div class="layui-inline">
+                        <input id="edtSearch" class="layui-input" type="text" placeholder="输入关键字"/>
+                    </div>
+                    <div class="layui-inline">
+                        <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+                    </div>
+                </div>
+            </div>
+
+            <table class="layui-table" id="scriptTable" lay-filter="scriptTable"></table>
+        </div>
+    </div>
+</div>
+
+<!-- 表格操作列 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-xs" lay-event="apiDoc">接口文档</a>
+</script>
+<!-- 表格状态列 -->
+<script type="text/html" id="tableState">
+    <input type="checkbox" lay-filter="ckState" value="{{d.id}}" lay-skin="switch"
+           lay-text="正常|锁定" {{d.status==1?'checked':''}}/>
+</script>
+
+<!-- js部分 -->
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=311"></script>
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'formSelects', 'config'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var formSelects = layui.formSelects;
+        var config = layui.config;
+
+        // 渲染表格
+        var insTb = table.render({
+            elem: '#scriptTable',
+            url: config.base_server + '/serviceInfos/getServiceInfo',
+            method: 'POST',
+            // where: {
+            //     access_token: config.getToken().access_token
+            // },
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                // {type: 'checkbox'},
+                {field: 'serverId', title: '服务名称', sort: true},
+                {field: 'host', title: 'ip地址'},
+                {field: 'port', title: '端口'},
+                {field: 'instanceId', title: '服务实列'},
+                {field: 'zuulPath', title: '网关路径'},
+                {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 150, fixed: "right"}
+            ]]
+        });
+
+        // 搜索
+        $('#btnSearch').click(function () {
+            var key = $('#sltKey').val();
+            var value = $('#edtSearch').val();
+            if (!value) {
+                layer.msg("请输入关键字", {icon: 5, anim: 6});
+                $('#edtSearch').addClass('layui-form-danger');
+                $('#edtSearch').focus();
+                return;
+            }
+            if (value && !key) {
+                layer.msg('请选择搜索条件', {icon: 2});
+            }
+            table.reload('scriptTable', {where: {searchKey: key, searchValue: value}});
+        });
+
+        // 工具条点击事件
+        table.on('tool(scriptTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            if (layEvent === 'apiDoc') { // 查看接口文档
+                showEditModel(data);
+            }
+        });
+
+        // 显示表单弹窗
+        function showEditModel(data) {
+            console.log(data.zuulPath);
+
+            // top.layui.index.openTab({
+            //     title: '接口文档',
+            //     // url: 'page/develop/swagger-ui.html',
+            //     url: config.base_server + '/' + data.zuulPath + '/swagger-ui.html',
+            //     end: function () {
+            //
+            //     }
+            // });
+
+            var idx = layer.open({
+                type: 2,
+                title: data.serverId + '接口文档',
+                content: config.base_server + '/' + data.zuulPath + '/swagger-ui.html',
+                // content: 'http://www.baidu.com',
+                // maxmin: true,
+                // area: ['893px', '600px'],
+                success: function (layero, dIndex) {
+
+                }
+            });
+            layer.full(idx);
+
+            // window.open(config.base_server + '/' + data.zuulPath + '/swagger-ui.html');
+        }
+
+    });
+</script>
+
+</body>
+</html>

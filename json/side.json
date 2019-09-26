@@ -1,0 +1,78 @@
+{
+  "code": 200,
+  "msg": "",
+  "data": [
+    {
+      "name": "主页",
+      "icon": "layui-icon layui-icon-home",
+      "url": "javascript:;",
+      "subMenus": [
+        {
+          "name": "欢迎页",
+          "url": "page/console/welcome.html"
+        }
+      ]
+    },
+    {
+      "name": "系统管理",
+      "icon": "layui-icon layui-icon-set",
+      "url": "javascript:;",
+      "subMenus": [
+        {
+          "name": "用户管理",
+          "url": "page/system/user.html"
+        },
+        {
+          "name": "角色管理",
+          "url": "page/system/role.html"
+        },
+        {
+          "name": "权限管理",
+          "url": "page/system/authority.html"
+        },
+        {
+          "name": "操作日志",
+          "url": "page/system/actionLog.html"
+        }
+      ]
+    },
+    {
+      "name": "指泊管理",
+      "icon": "layui-icon layui-icon-flag",
+      "url": "javascript:;",
+      "subMenus": [
+        {
+          "name": "船期信息",
+          "url": "page/berth/vesselVisit.html"
+        },
+        {
+          "name": "船期维护",
+          "url": "page/berth/vesselVisitMaintain.html"
+        },
+        {
+          "name": "自动指泊",
+          "url": "page/berth/autoBerth.html"
+        }
+      ]
+    },
+    {
+      "name": "开发中心",
+      "icon": "layui-icon layui-icon-app",
+      "url": "javascript:;",
+      "subMenus": [
+        {
+          "name": "接口文档",
+          "url": "http://localhost:8083/swagger-ui.html"
+        },
+        {
+          "name": "代码生成",
+          "url": "page/development/code.html"
+        },
+        {
+          "name": "表单构建",
+          "url": "page/development/form.html"
+        }
+      ]
+    }
+  ]
+}

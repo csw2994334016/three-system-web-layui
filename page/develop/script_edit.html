@@ -1,0 +1,157 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>修改代码</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="../../assets/module/admin.css?v=311"/>
+    <link rel="stylesheet" href="../../assets/module/formSelects/formSelects-v4.css"/>
+
+</head>
+<body>
+
+<!-- 页面加载loading -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<form id="modelScriptForm" lay-filter="modelScriptForm" class="layui-form model-form">
+    <div class="model-form-body">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>脚本名称</label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入脚本名称" type="text" class="layui-input" maxlength="50"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item layui-row layui-col-space10">
+            <div class="layui-col-md2">
+                <label class="layui-form-label"><span style="color: red;">* </span>版本号</label>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-input-block">
+                    <input name="version" placeholder="请输入版本号" type="number" class="layui-input" min="0" max="5000"
+                           lay-verType="tips" lay-verify="required|number" value="1" required/>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">备注</label>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-input-block">
+                    <input name="remark" placeholder="请输入备注" type="text" class="layui-input"/>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>代码</label>
+            <div class="layui-input-block">
+                <textarea id="demoCkEditor"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item model-form-footer text-center">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="modelScriptSubmit" lay-submit>保存</button>
+    </div>
+</form>
+
+<!--<div class="layui-fluid">-->
+<!--<div class="layui-card">-->
+<!--<div class="layui-card-body">-->
+<!--<div style="margin-bottom: 10px;">-->
+<!--<button id="btnEdtGetData" class="layui-btn layui-btn-sm" type="button">获取内容</button>-->
+<!--<button id="btnEdtSetData" class="layui-btn layui-btn-sm" type="button">设置内容</button>-->
+<!--<button id="btnEdtAddData" class="layui-btn layui-btn-sm" type="button">插入内容</button>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--</div>-->
+
+<script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js?v=311"></script>
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'formSelects', 'config', 'CKEDITOR'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var formSelects = layui.formSelects;
+        var config = layui.config;
+        var CKEDITOR = layui.CKEDITOR;
+
+        // 渲染富文本编辑器
+        CKEDITOR.replace('demoCkEditor',
+            {
+                height: 400
+            });
+        var insEdt = CKEDITOR.instances.demoCkEditor;
+
+        var script_data = admin.getTempData('script_data');
+        if (script_data) {
+            form.val('modelScriptForm', script_data);
+            $('#modelScriptForm').attr('method', 'PUT');
+            insEdt.setData(script_data['plainTxt']);
+        } else {
+            $('#modelScriptForm').attr('method', 'POST');
+        }
+
+        form.on('submit(modelScriptSubmit)', function (data) {
+            layer.load(2);
+            var content = insEdt.getData();  // 获取到内容
+            if (content) {
+                data.field.plainTxt = content;
+                data.field.code = getCode("<code class=\"language-java\">", content);
+                // console.log(data.field);
+                admin.req(config.base_server + '/' + admin.getTempData('script_server') + '/' + admin.getTempData('script_server') + '/scripts', data.field, function (res) {
+                        layer.closeAll('loading');
+                        if (res.code === 200) {
+                            layer.msg(res.msg, {icon: 1});
+                            setTimeout(function () {
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
+                            }, "500");
+                        } else {
+                            layer.msg(res.msg, {icon: 2});
+                        }
+                    }
+                    ,
+                    $('#modelScriptForm').attr('method')
+                );
+                return false;
+            } else {
+                layer.closeAll('loading');
+                layer.msg('代码不可以为空', {icon: 2});
+                return false;
+            }
+        });
+
+        // 获取内容
+        $('#btnEdtGetData').click(function () {
+            var content = getCode("<code class=\"language-java\">", insEdt.getData());  // 获取到内容
+            layer.prompt({
+                shade: .1,
+                offset: '35px',
+                title: '源码',
+                skin: 'layui-layer-admin layui-layer-prompt',
+                formType: 2,
+                value: content,
+                btn: []
+            });
+        });
+
+        function getCode(language, content) {
+            var s = content.indexOf(language);
+            var e = content.indexOf("</code>");
+            return content.substring(s + language.length, e);
+        }
+
+    });
+</script>
+</body>
+</html>
