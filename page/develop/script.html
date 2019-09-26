@@ -217,7 +217,7 @@
             admin.putTempData('script_data', modelData);
             var index = admin.open({
                 type: 2,
-                title: (modelData ? '修改' : '添加') + '脚本',
+                title: (modelData ? '修改' : '添加') + '脚本[' + admin.getTempData('script_server') + ']',
                 // content: $('#modelScript').html(),
                 content: 'script_edit.html',
                 area: ['893px', '600px'],
