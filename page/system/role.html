@@ -322,7 +322,7 @@
                     // 渲染表格
                     table.render({
                         elem: '#role-user-table',
-                        url: config.three_user_server + '/sys/users/findByRole?roleId=' + data.id,
+                        url: config.three_user_server + '/sys/employees/findByRole?roleId=' + data.id,
                         method: 'POST',
                         where: {
                             access_token: config.getToken().access_token
@@ -333,8 +333,12 @@
                             {type: 'checkbox'},
                             {field: 'username', sort: true, title: '账号'},
                             {field: 'fullName', sort: true, title: '姓名'},
-                            {field: 'phone', sort: true, title: '手机号'},
-                            {field: 'remark', title: '备注'},
+                            {field: 'cellNum', sort: true, title: '手机号'},
+                            {
+                                field: 'orgName', title: '所在机构', templet: function (d) {
+                                    return d.organization.orgName
+                                }
+                            },
                             {
                                 sort: true, templet: function (d) {
                                     return util.toDateString(d.createDate);

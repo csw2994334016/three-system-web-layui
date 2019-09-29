@@ -60,6 +60,8 @@
         <input name="id" type="hidden"/>
         <input id="parentId" name="parentId" type="text" value="-1" hidden/>
         <input id="parentName" name="parentName" type="hidden"/>
+        <input id="parentIds" name="parentIds" type="hidden"/>
+        <input id="firstParentId" name="firstParentId" type="hidden"/>
         <div class="layui-form-item">
             <label class="layui-form-label"><span style="color: red;">* </span>机构名称</label>
             <div class="layui-input-block">
@@ -93,8 +95,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label"><span style="color: red;">* </span>排序号</label>
             <div class="layui-input-block">
-                <input name="sort" placeholder="请输入排序号" type="number" class="layui-input" min="0" max="1000"
-                       lay-verType="tips" lay-verify="required|number" required value="1"/>
+                <input name="sort" placeholder="请输入排序号" type="number" class="layui-input" min="0" max="1000000"
+                       lay-verType="tips" lay-verify="required|number" required value="100"/>
             </div>
         </div>
         <div class="layui-form-item">
@@ -343,6 +345,17 @@
                         // layer.msg('你选择了：' + data.nodeId + '-' + data.context);
                         $("#parentId").val(data.nodeId);
                         $("#parentName").val(data.context);
+                        var nodes = dtree.getAllParentParam('parentIdTree', data.nodeId);
+                        // console.log(nodes);
+                        if (nodes.length === 0) {
+                            $("#firstParentId").val(data.nodeId);
+                        } else {
+                            for (var i = 0; i < nodes.length; i++) {
+                                if (nodes[i].level === "1") {
+                                    $("#firstParentId").val(nodes[i].nodeId);
+                                }
+                            }
+                        }
                     });
 
 

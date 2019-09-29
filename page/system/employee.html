@@ -9,6 +9,25 @@
     <link rel="stylesheet" href="../../assets/libs/layui/css/layui.css"/>
     <link rel="stylesheet" href="../../assets/module/admin.css?v=311"/>
     <link rel="stylesheet" href="../../assets/module/formSelects/formSelects-v4.css"/>
+    <link rel="stylesheet" href="../../assets/module/dtree/dtree.css"/>
+    <link rel="stylesheet" href="../../assets/module/dtree/font/dtreefont.css"/>
+    <style>
+        #orgTree {
+            height: 535px;
+            overflow: auto;
+        }
+
+        @media screen and (max-width: 768px) {
+            #orgTree {
+                height: auto;
+            }
+        }
+
+        /** dtree选中颜色重写 */
+        .dtree-theme-item-this {
+            background-color: #eeeeee !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -19,37 +38,53 @@
     </div>
 </div>
 
+
 <!-- 正文开始 -->
 <div class="layui-fluid">
-    <div class="layui-card">
-        <div class="layui-card-body">
-            <div class="layui-form toolbar">
-                <div class="layui-form-item">
-                    <label class="layui-form-label w-auto">搜索：</label>
-                    <div class="layui-inline">
-                        <select id="sltKey">
-                            <option value="">请选择搜索条件</option>
-                            <option value="username">账号</option>
-                            <option value="fullName">姓名</option>
-                            <option value="phone">手机号</option>
-                        </select>
-                    </div>
-                    <div class="layui-inline">
-                        <input id="edtSearch" class="layui-input" type="text" placeholder="输入关键字"/>
-                    </div>
-                    <div class="layui-inline">
-                        <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
-                        <button id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
-                        <button id="btnReset" class="layui-btn icon-btn"><i class="layui-icon"></i>重置密码</button>
-                        <button id="btnDel" class="layui-btn icon-btn layui-btn-danger"><i
-                                class="layui-icon">&#xe640;</i>删除
-                        </button>
-                    </div>
+    <div class="layui-row layui-col-space15">
+        <!-- 左树 -->
+        <div class="layui-col-sm12 layui-col-md4 layui-col-lg3">
+            <div class="layui-card">
+                <div class="layui-card-body mini-bar" id="orgTree">
                 </div>
             </div>
-
-            <table class="layui-table" id="userTable" lay-filter="userTable"></table>
         </div>
+        <!-- 右表 -->
+        <div class="layui-col-sm12 layui-col-md8 layui-col-lg9">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label w-auto">搜索：</label>
+                            <div class="layui-inline">
+                                <select id="sltKey">
+                                    <option value="">请选择搜索条件</option>
+                                    <option value="username">账号</option>
+                                    <option value="fullName">姓名</option>
+                                    <option value="cellNum">手机号</option>
+                                </select>
+                            </div>
+                            <div class="layui-inline">
+                                <input id="edtSearch" class="layui-input" type="text" placeholder="输入关键字"/>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索
+                                </button>
+                                <button id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加
+                                </button>
+                                <button id="btnReset" class="layui-btn icon-btn"><i class="layui-icon"></i>重置密码</button>
+                                <button id="btnDel" class="layui-btn icon-btn layui-btn-danger"><i
+                                        class="layui-icon">&#xe640;</i>删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="layui-table" id="userTable" lay-filter="userTable"></table>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -67,6 +102,7 @@
 <script type="text/html" id="modelUser">
     <form id="modelUserForm" lay-filter="modelUserForm" class="layui-form model-form">
         <input name="id" type="hidden"/>
+        <input id="organizationId" name="organizationId" type="hidden"/>
         <div class="layui-form-item">
             <label class="layui-form-label"><span style="color: red;">* </span>账号</label>
             <div class="layui-input-block">
@@ -75,7 +111,7 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label"><span style="color: red;">* </span>用户名</label>
+            <label class="layui-form-label"><span style="color: red;">* </span>姓名</label>
             <div class="layui-input-block">
                 <input name="fullName" placeholder="请输入姓名" type="text" class="layui-input" maxlength="20"
                        lay-verType="tips" lay-verify="required" required/>
@@ -84,8 +120,14 @@
         <div class="layui-form-item">
             <label class="layui-form-label"><span style="color: red;">* </span>手机号</label>
             <div class="layui-input-block">
-                <input name="phone" placeholder="请输入手机号" type="text" class="layui-input" maxlength="20"
+                <input name="cellNum" placeholder="请输入手机号" type="text" class="layui-input" maxlength="20"
                        lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span style="color: red;">* </span>所在机构</label>
+            <div class="layui-input-block">
+                <ul id="organizationIdTree" class="dtree" style="width: 100%;"></ul>
             </div>
         </div>
         <div class="layui-form-item">
@@ -104,12 +146,14 @@
 <!-- 分配角色弹窗 -->
 <script type="text/html" id="modelUserRole">
     <form id="user-role-form" lay-filter="user-role-form" class="layui-form model-form">
-        <input name="id" hidden/>
-        <div class="layui-form-item">
-            <label class="layui-form-label">角色</label>
-            <div class="layui-input-block" lay-tips="请至少选择[默认角色]！" lay-direction="1">
-                <select name="roleId" xm-select="roleId" lay-verify="required">
-                </select>
+        <div class="">
+            <input name="id" hidden/>
+            <div class="layui-form-item">
+                <label class="layui-form-label">角色</label>
+                <div class="layui-input-block" lay-tips="请至少选择[默认角色]！" lay-direction="1">
+                    <select name="roleId" xm-select="roleId" lay-verify="required">
+                    </select>
+                </div>
             </div>
         </div>
         <div class="layui-form-item text-center">
@@ -123,7 +167,7 @@
 <script type="text/javascript" src="../../assets/libs/layui/layui.js"></script>
 <script type="text/javascript" src="../../assets/js/common.js?v=311"></script>
 <script>
-    layui.use(['layer', 'form', 'table', 'util', 'admin', 'formSelects', 'config'], function () {
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'formSelects', 'config', 'notice', 'treetable', 'cascader', 'dtree'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var form = layui.form;
@@ -132,11 +176,15 @@
         var admin = layui.admin;
         var formSelects = layui.formSelects;
         var config = layui.config;
+        var notice = layui.notice;
+        var treetable = layui.treetable;
+        var cascader = layui.cascader;
+        var dtree = layui.dtree;
 
         // 渲染表格
         var insTb = table.render({
             elem: '#userTable',
-            url: config.three_user_server + '/sys/users/query',
+            url: config.three_user_server + '/sys/employees/query',
             method: 'POST',
             where: {
                 access_token: config.getToken().access_token
@@ -146,8 +194,13 @@
             cols: [[
                 {type: 'checkbox'},
                 {field: 'username', title: '账号'},
-                {field: 'fullName', title: '昵称'},
-                {field: 'phone', sort: true, title: '手机号'},
+                {field: 'fullName', title: '姓名'},
+                {field: 'cellNum', sort: true, title: '手机号'},
+                {
+                    field: 'orgName', title: '所在机构', templet: function (d) {
+                        return d.organization.orgName
+                    }
+                },
                 {field: 'remark', title: '备注'},
                 {
                     templet: function (d) {
@@ -191,16 +244,11 @@
         $('#btnSearch').click(function () {
             var key = $('#sltKey').val();
             var value = $('#edtSearch').val();
-            if (!value) {
-                layer.msg("请输入关键字", {icon: 5, anim: 6});
-                $('#edtSearch').addClass('layui-form-danger');
-                $('#edtSearch').focus();
-                return;
-            }
             if (value && !key) {
                 layer.msg('请选择搜索条件', {icon: 2});
+            } else {
+                table.reload('userTable', {where: {searchKey: key, searchValue: value}});
             }
-            table.reload('userTable', {where: {searchKey: key, searchValue: value}});
         });
 
         // 工具条点击事件
@@ -215,20 +263,49 @@
         });
 
         // 显示表单弹窗
-        function showEditModel(mUser) {
+        function showEditModel(modelData) {
             admin.open({
                 type: 1,
-                title: (mUser ? '修改' : '添加') + '用户',
+                title: (modelData ? '修改' : '添加') + '用户',
+                area: ['500px'],
                 content: $('#modelUser').html(),
                 success: function (layero, dIndex) {
                     $(layero).children('.layui-layer-content').css('overflow', 'visible');
-                    var method = mUser ? 'PUT' : 'POST';
+                    var method = modelData ? 'PUT' : 'POST';
+
+                    admin.req(config.three_user_server + '/sys/organizations/tree', null, function (data) {
+                        layer.closeAll('loading');
+                        if (200 === data.code) {
+                            // console.log(data.data);
+                            dtree.renderSelect({
+                                elem: "#organizationIdTree",
+                                data: data.data,
+                                dataStyle: "layuiStyle",
+                                done: function () {
+                                    if (modelData) {
+                                        dtree.setSelectValue("organizationIdTree", modelData.organization.orgName);
+                                    }
+                                }
+                            });
+                            form.val('modelUserForm', modelData);  // 回显数据
+                            $("#organizationId").val(modelData.organization.id);
+                        } else {
+                            notice.error({message: data.msg});
+                        }
+                    }, 'GET');
+                    // 树形点击事件
+                    dtree.on('node("organizationIdTree")', function (obj) {
+                        var data = obj.param;
+                        // layer.msg('你选择了：' + data.nodeId + '-' + data.context);
+                        $("#organizationId").val(data.nodeId);
+                    });
+
                     // 回显用户角色
-                    form.val('modelUserForm', mUser);
+                    form.val('modelUserForm', modelData);
                     // 表单提交事件
                     form.on('submit(modelUserSubmit)', function (data) {
                         layer.load(2);
-                        admin.req(config.three_user_server + '/sys/users', data.field, function (res) {
+                        admin.req(config.three_user_server + '/sys/employees', data.field, function (res) {
                             layer.closeAll('loading');
                             if (res.code === 200) {
                                 // admin.refreshToken();
@@ -246,10 +323,10 @@
         }
 
         // 显示分配角色弹框
-        function showAssignRoleModel(mUser) {
+        function showAssignRoleModel(modelData) {
             admin.open({
                 type: 1,
-                title: '分配角色-' + mUser.username,
+                title: '分配角色-' + modelData.username,
                 content: $('#modelUserRole').html(),
                 area: ['450px', '400px'],
                 success: function (layero, dIndex) {
@@ -266,10 +343,10 @@
                                 roleSelectData.push({name: data.data[i].roleName, value: data.data[i].id});
                             }
                             formSelects.data('roleId', 'local', {arr: roleSelectData});
-                            if (mUser) {
+                            if (modelData && modelData.roles) {
                                 var roleIds = [];
-                                for (var i = 0; i < mUser.roles.length; i++) {
-                                    roleIds.push(mUser.roles[i].id);
+                                for (var i = 0; i < modelData.roles.length; i++) {
+                                    roleIds.push(modelData.roles[i].id);
                                 }
                                 formSelects.value('roleId', roleIds);
                             }
@@ -278,12 +355,12 @@
                         }
                     }, 'GET');
                     // 回显用户角色
-                    form.val('user-role-form', mUser);
+                    form.val('user-role-form', modelData);
                     // 表单提交事件
                     form.on('submit(user-role-form-submit)', function (data) {
                         data.field.roleIds = formSelects.value('roleId', 'valStr');
                         layer.load(2);
-                        admin.req(config.three_user_server + '/sys/users/assignRole', data.field, function (res) {
+                        admin.req(config.three_user_server + '/sys/employees/assignRole', data.field, function (res) {
                             layer.closeAll('loading');
                             if (res.code === 200) {
                                 admin.refreshToken();
@@ -310,7 +387,7 @@
                 }, function (i) {
                     top.layer.close(i);
                     layer.load(2);
-                    admin.req(config.three_user_server + '/sys/users/status?' + 'ids=' + ids + '&status=3', {}, function (res) {
+                    admin.req(config.three_user_server + '/sys/employees/status?' + 'ids=' + ids + '&status=3', {}, function (res) {
                         layer.closeAll('loading');
                         if (res.code === 200) {
                             layer.msg(res.msg, {icon: 1});
@@ -351,7 +428,7 @@
         form.on('switch(ckState)', function (obj) {
             layer.load(2);
             var status = obj.elem.checked ? 1 : 2;
-            admin.req(config.three_user_server + '/sys/users/status?' + 'ids=' + obj.elem.value + '&status=' + status, {}, function (res) {
+            admin.req(config.three_user_server + '/sys/employees/status?' + 'ids=' + obj.elem.value + '&status=' + status, {}, function (res) {
                 layer.closeAll('loading');
                 if (res.code === 200) {
                     layer.msg(res.msg, {icon: 1});
@@ -361,6 +438,29 @@
                     form.render('checkbox');
                 }
             }, 'PUT');
+        });
+
+
+        // 树形渲染
+        dtree.render({
+            elem: '#orgTree',
+            url: config.three_user_server + '/sys/organizations/tree',
+            method: 'GET',
+            type: 'all',
+            initLevel: '2',
+            dot: false,
+            dataStyle: "layuiStyle", // 使用layui风格的数据格式
+            headers: {'Authorization': 'Bearer ' + config.getToken().access_token},
+            response: {message: "msg"}  // 修改response中返回数据的定义
+        });
+
+        // 树形点击事件
+        dtree.on('node("orgTree")', function (obj) {
+            var data = obj.param;
+            // layer.msg('你选择了：' + data.nodeId + '-' + data.context);
+            // insTb.reload({where: {orgId: data.nodeId}}, 'data');
+
+            table.reload('userTable', {where: {searchKey: 'organizationId', searchValue: data.nodeId}});
         });
 
     });
