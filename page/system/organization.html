@@ -379,12 +379,12 @@
             });
         }
 
-        // 查看角色用户
+        // 查看组织下用户
         var lookRoleUserTable = function (data) {
             layer.load(2);
             layer.open({
                 type: 1,
-                title: data.roleName + '-用户列表',
+                title: data.orgName + '-用户列表',
                 content: $('#role-user-model-table').html(),
                 area: ['800px', '400px'],
                 skin: 'layui-layer-admin',
@@ -393,10 +393,11 @@
                     // 渲染表格
                     table.render({
                         elem: '#role-user-table',
-                        url: config.three_user_server + '/sys/users/findByRole?roleId=' + data.id,
+                        url: config.three_user_server + '/sys/employees/query',
                         method: 'POST',
                         where: {
-                            access_token: config.getToken().access_token
+                            access_token: config.getToken().access_token,
+                            searchKey: 'organizationId', searchValue: data.id
                         },
                         page: true,
                         cellMinWidth: 100,
