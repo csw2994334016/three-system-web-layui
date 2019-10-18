@@ -126,8 +126,13 @@
             elem: '#scriptTable',
             url: config.base_server + '/' + admin.getTempData('script_server') + '/' + admin.getTempData('script_server') + '/scripts/query',
             method: 'POST',
-            where: {
-                access_token: config.getToken().access_token
+            // where: {
+            //     access_token: config.getToken().access_token
+            // },
+            headers: {Authorization: 'Bearer ' + config.getToken().access_token},
+            response: {
+                statusName: 'code',  // 规定数据状态的字段名称，默认：code
+                statusCode: 200, // 规定成功的状态码，默认：0
             },
             page: true,
             cellMinWidth: 100,
@@ -150,7 +155,7 @@
         admin.req(config.base_server + '/serviceInfos/getServiceInfo', {}, function (data) {
             // console.log(data);
             layer.closeAll('loading');
-            if (0 === data.code) {
+            if (200 === data.code) {
                 // 渲染下拉框
                 $.each(data.data, function (index, item) {
                     $('#searchKey').append(new Option(item.serverId, item.zuulPath));// 下拉菜单里添加元素

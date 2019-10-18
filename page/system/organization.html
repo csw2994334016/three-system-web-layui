@@ -179,9 +179,10 @@
                 elem: '#organizationTable',
                 url: config.three_user_server + '/sys/organizations',
                 method: 'get',
-                where: {
-                    access_token: config.getToken().access_token
-                },
+                // where: {
+                //     access_token: config.getToken().access_token
+                // },
+                headers: {Authorization: 'Bearer ' + config.getToken().access_token},
                 cellMinWidth: 100,
                 cols: [[
                     {type: 'numbers'},
@@ -396,8 +397,13 @@
                         url: config.three_user_server + '/sys/employees/query',
                         method: 'POST',
                         where: {
-                            access_token: config.getToken().access_token,
+                            // access_token: config.getToken().access_token,
                             searchKey: 'organizationId', searchValue: data.id
+                        },
+                        headers: {Authorization: 'Bearer ' + config.getToken().access_token},
+                        response: {
+                            statusName: 'code',  // 规定数据状态的字段名称，默认：code
+                            statusCode: 200, // 规定成功的状态码，默认：0
                         },
                         page: true,
                         cellMinWidth: 100,

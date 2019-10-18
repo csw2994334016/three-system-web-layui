@@ -1,7 +1,8 @@
-layui.define(['layer', 'table'], function (exports) {
+layui.define(['layer', 'table', 'admin'], function (exports) {
     var $ = layui.jquery;
     var layer = layui.layer;
     var table = layui.table;
+    var admin = layui.admin;
 
     var treetable = {
         // 渲染树形表格
@@ -14,9 +15,16 @@ layui.define(['layer', 'table'], function (exports) {
             if (param.data) {
                 treetable.init(param, param.data);
             } else {
-                $.getJSON(param.url, param.where, function (res) {
-                    treetable.init(param, res.data);
-                });
+                // $.getJSON(param.url, param.where, function (res) {
+                //     treetable.init(param, res.data);
+                // });
+                admin.req(param.url, param.where, function (res) {
+                    if (200 === res.code) {
+                        treetable.init(param, res.data);
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                    }
+                }, param.method);
             }
         },
         // 渲染表格
@@ -48,7 +56,7 @@ layui.define(['layer', 'table'], function (exports) {
                 for (var i = 0; i < data.length; i++) {
                     if (data[i].pid == s_pid) {
                         var len = mData.length;
-                        if (len > 0 && mData[len - 1].id == s_pid) {
+                        if (len > 0 && mData[len - 1].id === s_pid) {
                             mData[len - 1].isParent = true;
                         }
                         mData.push(data[i]);

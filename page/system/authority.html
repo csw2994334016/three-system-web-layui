@@ -148,9 +148,10 @@
                 elem: '#authTable',
                 url: config.three_user_server + '/sys/authorities',
                 method: 'get',
-                where: {
-                    access_token: config.getToken().access_token
-                },
+                // where: {
+                //     access_token: config.getToken().access_token
+                // },
+                headers: {Authorization: 'Bearer ' + config.getToken().access_token},
                 cellMinWidth: 100,
                 cols: [[
                     {type: 'numbers'},
