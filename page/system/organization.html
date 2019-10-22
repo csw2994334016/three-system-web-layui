@@ -121,15 +121,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label w-auto">搜索：</label>
                     <div class="layui-inline">
-                        <select id="role-user-search-key">
-                            <option value="">请选择搜索条件</option>
-                            <option value="username">账号</option>
-                            <option value="fullName">姓名</option>
-                            <option value="phone">手机号</option>
-                        </select>
-                    </div>
-                    <div class="layui-inline">
-                        <input id="role-user-search-value" class="layui-input" type="text" placeholder="输入关键字"/>
+                        <input id="role-user-search-value" class="layui-input" type="text" placeholder="输入姓名/手机号"/>
                     </div>
                     <div class="layui-inline">
                         <button id="role-user-btn-search" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索
@@ -398,7 +390,7 @@
                         method: 'GET',
                         where: {
                             // access_token: config.getToken().access_token,
-                            searchKey: 'organizationId', searchValue: data.id
+                            'organizationId': data.id
                         },
                         headers: {Authorization: 'Bearer ' + config.getToken().access_token},
                         response: {
@@ -411,7 +403,7 @@
                             {type: 'checkbox'},
                             {field: 'username', sort: true, title: '账号'},
                             {field: 'fullName', sort: true, title: '姓名'},
-                            {field: 'phone', sort: true, title: '手机号'},
+                            {field: 'cellNum', sort: true, title: '手机号'},
                             {field: 'remark', title: '备注'},
                             {
                                 sort: true, templet: function (d) {
@@ -455,9 +447,8 @@
 
                     // 搜索按钮点击事件
                     $('#role-user-btn-search').click(function () {
-                        var key = $('#role-user-search-key').val();
                         var value = $('#role-user-search-value').val();
-                        table.reload('role-user-table', {where: {searchKey: key, searchValue: value}});
+                        table.reload('role-user-table', {where: {searchValue: value}});
                     });
                 }
             });

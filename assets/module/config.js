@@ -9,6 +9,7 @@ layui.define(function (exports) {
         // base_server: 'http://localhost:8083', // 接口地址
         base_server: gateway, // 网关地址
         three_user_server: gateway + '/three-user-server', // 用户服务
+        three_points_server: gateway + '/three-points-server', // 积分制管理服务
         three_log_server: gateway + '/three-log-server', // 日志服务
         three_develop_server: gateway + '/three-develop-server', // 定时任务服务
         three_auth_server: gateway + '/three-auth-server', // 认证-授权服务

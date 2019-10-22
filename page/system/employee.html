@@ -57,15 +57,7 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label w-auto">搜索：</label>
                             <div class="layui-inline">
-                                <select id="sltKey">
-                                    <option value="">请选择搜索条件</option>
-                                    <option value="username">账号</option>
-                                    <option value="fullName">姓名</option>
-                                    <option value="cellNum">手机号</option>
-                                </select>
-                            </div>
-                            <div class="layui-inline">
-                                <input id="edtSearch" class="layui-input" type="text" placeholder="输入关键字"/>
+                                <input id="edtSearch" class="layui-input" type="text" placeholder="输入姓名/手机号"/>
                             </div>
                             <div class="layui-inline">
                                 <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索
@@ -247,13 +239,8 @@
 
         // 搜索
         $('#btnSearch').click(function () {
-            var key = $('#sltKey').val();
             var value = $('#edtSearch').val();
-            if (value && !key) {
-                layer.msg('请选择搜索条件', {icon: 2});
-            } else {
-                table.reload('userTable', {where: {searchKey: key, searchValue: value}});
-            }
+            table.reload('userTable', {where: {searchValue: value}});
         });
 
         // 工具条点击事件
@@ -356,7 +343,7 @@
                                 formSelects.value('roleId', roleIds);
                             }
                         } else {
-                            layer.msg('获取角色失败', {icon: 2});
+                            layer.msg('获取角色失败：' + data.msg, {icon: 2});
                         }
                     }, 'GET');
                     // 回显用户角色
@@ -465,7 +452,7 @@
             // layer.msg('你选择了：' + data.nodeId + '-' + data.context);
             // insTb.reload({where: {orgId: data.nodeId}}, 'data');
 
-            table.reload('userTable', {where: {searchKey: 'organizationId', searchValue: data.nodeId}});
+            table.reload('userTable', {where: {organizationId: data.nodeId}});
         });
 
     });
