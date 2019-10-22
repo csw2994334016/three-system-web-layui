@@ -395,7 +395,7 @@
                     table.render({
                         elem: '#role-user-table',
                         url: config.three_user_server + '/sys/employees/query',
-                        method: 'POST',
+                        method: 'GET',
                         where: {
                             // access_token: config.getToken().access_token,
                             searchKey: 'organizationId', searchValue: data.id

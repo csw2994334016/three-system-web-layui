@@ -125,7 +125,7 @@
         var insTb = table.render({
             elem: '#scriptTable',
             url: config.base_server + '/' + admin.getTempData('script_server') + '/' + admin.getTempData('script_server') + '/scripts/query',
-            method: 'POST',
+            method: 'GET',
             // where: {
             //     access_token: config.getToken().access_token
             // },
@@ -152,7 +152,7 @@
         });
 
         // 加载服务到搜索下拉列表
-        admin.req(config.base_server + '/serviceInfos/getServiceInfo', {}, function (data) {
+        admin.req(config.base_server + '/serviceInfos/getServiceInfo', null, function (data) {
             // console.log(data);
             layer.closeAll('loading');
             if (200 === data.code) {
@@ -164,7 +164,7 @@
             } else {
                 layer.msg('获取服务信息失败：' + data.msg, {icon: 2});
             }
-        }, 'POST');
+        }, 'GET');
         // 搜索下拉列表改变时间
         form.on('select(searchKeyFilter)', function (data) {
             var value = data.value;  // select选中的值

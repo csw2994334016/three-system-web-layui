@@ -305,10 +305,10 @@
                     $(layero).children('.layui-layer-content').css({'overflow': 'auto', 'padding-left': '20px'});
                     layer.load(2);
                     // 获取服务列表
-                    admin.req(config.base_server + '/serviceInfos/getServiceInfo', {}, function (data) {
+                    admin.req(config.base_server + '/serviceInfos/getServiceInfo', null, function (data) {
                         // console.log(data);
                         layer.closeAll('loading');
-                        if (0 === data.code) {
+                        if (200 === data.code) {
                             // 渲染下拉框
                             $.each(data.data, function (index, item) {
                                 // $('#searchKey').append(new Option(item.serverId, item.zuulPath));// 下拉菜单里添加元素
@@ -318,7 +318,7 @@
                         } else {
                             layer.msg('获取服务信息失败：' + data.msg, {icon: 2});
                         }
-                    }, 'POST');
+                    }, 'GET');
                 },
                 yes: function (index) {
                     // layer.load(2);

@@ -74,7 +74,7 @@
         var insTb = table.render({
             elem: '#scriptTable',
             url: config.base_server + '/serviceInfos/getServiceInfo',
-            method: 'POST',
+            method: 'GET',
             // where: {
             //     access_token: config.getToken().access_token
             // },
@@ -82,7 +82,7 @@
                 statusName: 'code',  // 规定数据状态的字段名称，默认：code
                 statusCode: 200, // 规定成功的状态码，默认：0
             },
-            page: true,
+            page: false,
             cellMinWidth: 100,
             cols: [[
                 // {type: 'checkbox'},
@@ -133,10 +133,15 @@
             //     }
             // });
 
+            var u = data.zuulPath + '/swagger-ui.html';
+            if (data.zuulPath === 'three-zuul-server') {
+                u = 'swagger-ui.html'
+            }
+
             var idx = layer.open({
                 type: 2,
                 title: data.serverId + '接口文档',
-                content: config.base_server + '/' + data.zuulPath + '/swagger-ui.html',
+                content: config.base_server + '/' + u,
                 // content: 'http://www.baidu.com',
                 // maxmin: true,
                 // area: ['893px', '600px'],
