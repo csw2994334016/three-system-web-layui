@@ -188,9 +188,12 @@ layui.define(["layer", 'config'], function (f) {
             field.client_secret = config.client_secret;
             $.ajax({
                 url: config.base_server + '/sys/refresh_token',
-                data: field,
+                // data: field,
+                // type: 'POST',
+                // dataType: 'JSON',
+                data: JSON.stringify(field),
                 type: 'POST',
-                dataType: 'JSON',
+                contentType: "application/json;charset=UTF-8",
                 async: false,
                 success: function (data) {
                     console.log(data);

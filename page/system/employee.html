@@ -178,9 +178,9 @@
             elem: '#userTable',
             url: config.three_user_server + '/sys/employees/query',
             method: 'GET',
-            // where: {
-            //     access_token: config.getToken().access_token
-            // },
+            where: {
+                containChildFlag: '1'
+            },
             headers: {Authorization: 'Bearer ' + config.getToken().access_token},
             response: {
                 statusName: 'code',  // 规定数据状态的字段名称，默认：code

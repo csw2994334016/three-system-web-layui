@@ -76,9 +76,11 @@
             $.ajax({
                 // url: config.base_server + '/oauth/token',
                 url: config.base_server + '/sys/login',
-                data: field,
+                // data: field,
+                data: JSON.stringify(field),
                 type: 'POST',
-                dataType: 'JSON',
+                contentType: "application/json;charset=UTF-8",
+                // dataType: 'JSON',
                 success: function (data) {
                     console.log(data);
                     if (data.access_token) {
