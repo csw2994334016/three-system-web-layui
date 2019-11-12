@@ -1,7 +1,7 @@
 layui.define(function (exports) {
 
     // var gateway = 'http://127.0.0.1:8084';
-    var gateway = 'http://192.168.1.2:8084';
+    var gateway = 'http://192.168.0.105:8084';
      // var gateway = 'http://z2732870m7.wicp.vip:25569';
 
     var config = {

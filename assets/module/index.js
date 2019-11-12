@@ -110,9 +110,9 @@ layui.define(["layer", "element", "admin", "contextMenu", 'config'], function(s)
 			admin.req(config.three_user_server + '/sys/userInfo', null, function (data) {
 				layer.closeAll('loading');
 				if (200 === data.code) {
-					console.log(data.user);
-					config.putUser(data.user);
-					success(data.user);
+					console.log(data.data);
+					config.putUser(data.data);
+					success(data.data);
 				} else {
 					layer.msg('获取用户失败', {icon: 2});
 					location.replace('page/system/login.html');
