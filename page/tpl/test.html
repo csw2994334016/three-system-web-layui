@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算矩形到外层多边形的距离</title>
+</head>
+<body>
+<div class="layui-fluid">
+    <canvas id="myCanvas" width="4000" height="2000" style="border:1px solid #00000f;">
+        您的浏览器不支持 HTML5 canvas 标签。
+    </canvas>
+</div>
+</body>
+<script>
+    let myCanvas = document.getElementById('myCanvas');
+    let context = myCanvas.getContext('2d');
+
+    // let areas = [
+    //     {"x": 1044, "y": 57},
+    //     {"x": 1286, "y": 34},
+    //     {"x": 1285, "y": 288},
+    //     {"x": 1053, "y": 285}
+    // ];
+    // let areas = [
+    //     {"x": 1044, "y": 57},
+    //     {"x": 1143, "y": 34},
+    //     {"x": 1266, "y": 90},
+    //     {"x": 1265, "y": 288},
+    //     {"x": 1053, "y": 285}
+    // ];
+    // let stacks = [
+    //     {"x": 1066.86, "y": 80.56},
+    //     {"x": 1185.33, "y": 80.56},
+    //     {"x": 1185.33, "y": 187.36},
+    //     {"x": 1066.86, "y": 187.36}];
+
+    // let areas = [{"x":1044,"y":57},{"x":1286,"y":34},{"x":1285,"y":288},{"x":1053,"y":285}];
+    // let stacks = [{"x":1066.8599999999997,"y":80.56},{"x":1186.33,"y":80.56},{"x":1186.33,"y":188.36},{"x":1066.8599999999997,"y":188.36}];
+
+    let areas = [{"x": 207, "y": 58}, {"x": 241, "y": 57}, {"x": 244, "y": 1354}, {"x": 186, "y": 1354}, {
+        "x": 185,
+        "y": 801
+    }, {"x": 184, "y": 79}];
+    let stacks = [{"x": 204.05, "y": 154.59}, {"x": 225.95, "y": 154.59}, {"x": 225.95, "y": 219.5}, {
+        "x": 204.05,
+        "y": 219.5
+    }];
+
+    // 画area
+    context.beginPath();
+    context.moveTo(areas[0].x, areas[0].y);
+    context.fillText('0', areas[0].x, areas[0].y);
+    for (let i = 1; i < areas.length; i++) {
+        context.lineTo(areas[i].x, areas[i].y);
+        context.fillText('' + i, areas[i].x, areas[i].y);
+    }
+    context.closePath();
+    context.strokeStyle = 'black';
+    context.stroke();
+
+    // 画stack
+    context.beginPath();
+    context.moveTo(stacks[0].x, stacks[0].y);
+    context.fillText('0', stacks[0].x, stacks[0].y);
+    for (let i = 1; i < stacks.length; i++) {
+        context.lineTo(stacks[i].x, stacks[i].y);
+        context.fillText('' + i, stacks[i].x, stacks[i].y);
+    }
+    context.closePath();
+    context.strokeStyle = 'black';
+    context.stroke();
+
+    // 结果：垛位四个点连成的边，到对应区域边方向的距离
+    let result = getResult(areas, stacks);
+
+    console.log(result);
+
+    function getResult(areas, stacks) {
+        // 计算区域每条边和垛位每条边的交点，且只取落在区域边上的交点，每条边最多只有两个点
+        let stackPointCrossPointMap = new Map(); // <stack_point, Map<cross_point, dis>>
+        for (let i = 0; i < areas.length; i++) {
+            let j = i + 1 === areas.length ? 0 : i + 1;
+            for (let m = 0; m < stacks.length; m++) {
+                let n = m + 1 === stacks.length ? 0 : m + 1;
+                let crossPoint = getCrossPoint(areas[i], areas[j], stacks[m], stacks[n]);
+                if (crossPoint) {
+                    // 垛位边端点到区域边交点距离最短的点
+                    let dis_m = Math.sqrt((stacks[m].x - crossPoint.x) * (stacks[m].x - crossPoint.x) + (stacks[m].y - crossPoint.y) * (stacks[m].y - crossPoint.y));
+                    let dis_n = Math.sqrt((stacks[n].x - crossPoint.x) * (stacks[n].x - crossPoint.x) + (stacks[n].y - crossPoint.y) * (stacks[n].y - crossPoint.y));
+                    let p = dis_m < dis_n ? m : n;
+                    let dis = dis_m < dis_n ? dis_m : dis_n;
+                    if (!stackPointCrossPointMap.get(p)) {
+                        stackPointCrossPointMap.set(p, new Map())
+                    }
+                    stackPointCrossPointMap.get(p).set(crossPoint, dis);
+                }
+            }
+        }
+        console.log(stackPointCrossPointMap);
+        // 垛位端点与交点平行且不相交（这个逻辑只能支持矩形的垛位），到区域边交点距离小的值，为垛位边距离区域边的距离
+        let resultMap = new Map();
+        for (let m = 0; m < stacks.length; m++) {
+            let n = m + 1 === stacks.length ? 0 : m + 1;
+            let stackEdge = m + '_' + n;
+            let crossPointMap_m = stackPointCrossPointMap.get(m);
+            let crossPointMap_n = stackPointCrossPointMap.get(n);
+            for (let item_m of crossPointMap_m) {
+                let [crossPoint_m, dis_m] = item_m;
+                for (let item_n of crossPointMap_n) {
+                    let [crossPoint_n, dis_n] = item_n;
+                    // 平行、不共线的两条延长，进行比较长度
+                    if (checkParallel(stacks[m], crossPoint_m, stacks[n], crossPoint_n)) {
+                        let dis = dis_m < dis_n ? dis_m : dis_n;
+                        resultMap.set(stackEdge, dis)
+                    }
+                }
+            }
+        }
+        return resultMap;
+    }
+
+    function checkParallel(a, b, c, d) {
+        // 平行、不共线
+        // 如果a、b x坐标相同，c、d x坐标也相同，且a、c x坐标不相同，则平行不共线
+        if (a.x - b.x === 0 && c.x - d.x === 0 && a.x !== c.x) {
+            return true
+        }
+        let denominator = (b.y.toFixed(2) - a.y) * (d.x.toFixed(2) - c.x) - (a.x - b.x.toFixed(2)) * (c.y - d.y.toFixed(2)); // 斜率
+        if (denominator === 0) { // 平行或共线
+            // 不能共线：点不能在另外一条直线上
+            let cross1 = (a.y - c.y) * (a.x - d.x.toFixed(2));
+            let cross2 = (a.x - c.x) * (a.y - d.y.toFixed(2));
+            return cross1.toFixed(2) !== cross2.toFixed(2)
+        }
+        return false;
+    }
+
+    function getCrossPoint(a, b, c, d) {
+        let denominator = (b.y - a.y) * (d.x - c.x) - (a.x - b.x) * (c.y - d.y); // 斜率
+        if (denominator === 0) { // 平行或共线，不相交
+            return false;
+        }
+        // 交点坐标
+        let x = ((b.x - a.x) * (d.x - c.x) * (c.y - a.y) + (b.y - a.y) * (d.x - c.x) * a.x - (d.y - c.y) * (b.x - a.x) * c.x) / denominator;
+        let y = -((b.y - a.y) * (d.y - c.y) * (c.x - a.x) + (b.x - a.x) * (d.y - c.y) * a.y - (d.x - c.x) * (b.y - a.y) * c.y) / denominator;
+        // x = parseFloat(x.toFixed(2));
+        // y = parseFloat(y.toFixed(2));
+        let point = {"x": x, "y": y};
+        // 交点在(a, b)线段上
+        if (onSegment(a, b, point)) {
+            return point
+        }
+        return false
+    }
+
+    function onSegment(Pi, Pj, Q) {
+        // 叉乘、保证Q点坐标在pi,pj之间
+        let cross1 = (Q.x.toFixed(2) - Pi.x) * (Pj.y - Pi.y);
+        let cross2 = (Pj.x - Pi.x) * (Q.y.toFixed(2) - Pi.y);
+        return cross1.toFixed(2) === cross2.toFixed(2) && Math.min(Pi.x, Pj.x) <= Q.x && Q.x <= Math.max(Pi.x, Pj.x) && Math.min(Pi.y, Pj.y) <= Q.y && Q.y <= Math.max(Pi.y, Pj.y);
+    }
+</script>
+</html>
